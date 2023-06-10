@@ -10,7 +10,7 @@ import org.hibernate.annotations.UuidGenerator;
 public class LoanOfficer {
     @Id
     @UuidGenerator
-    private int id;
+    private String id;
     private String userName;
     private String password;
 }

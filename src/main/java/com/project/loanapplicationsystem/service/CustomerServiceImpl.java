@@ -7,6 +7,7 @@ import com.project.loanapplicationsystem.data.repostory.CustomerRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,18 +16,19 @@ import java.time.LocalDateTime;
 @Service
 @AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService{
+
+
     private final CustomerRepository customerRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final ModelMapper modelMapper;
+     private final ModelMapper modelMapper;
 
     @Override
     public SucessResponse register(RegistrationRequest request) {
-   if(customerRepository.findByEmailAddress(request.getEmailAddress())){
+   if(customerRepository.findByEmailAddress(request.getEmailAddress()).isPresent()){
         throw new RuntimeException("Customer Already Exist");
         }
 
    Customer customer =   modelMapper.map(request, Customer.class);
-   String encodePassword = passwordEncoder.encode(request.getPassword());
+   String encodePassword = bcrypt(request.getPassword());
    customer.setPassword(encodePassword);
    customer.setDateRegistered(LocalDateTime.now());
    customerRepository.save(customer);
@@ -37,4 +39,9 @@ public class CustomerServiceImpl implements CustomerService{
            .build();
     }
 
+    private String bcrypt(String password){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.encode(password);
+
+    }
 }
