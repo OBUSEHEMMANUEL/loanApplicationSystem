@@ -1,5 +1,6 @@
 package com.project.loanapplicationsystem.service;
 
+import com.project.loanapplicationsystem.data.dto.register.LoanRequest;
 import com.project.loanapplicationsystem.data.dto.register.LoginRequest;
 import com.project.loanapplicationsystem.data.dto.register.RegistrationRequest;
 import com.project.loanapplicationsystem.data.dto.register.UpdateRegistrationRequest;
@@ -52,6 +53,11 @@ public class CustomerServiceImpl implements CustomerService{
                 .message("Customer Registration Updated Successfully")
                 .StatusCode(HttpStatus.OK.value())
                 .build();
+    }
+
+    @Override
+    public SucessResponse loanApplication(LoanRequest request) {
+        return null;
     }
 
     @Override
