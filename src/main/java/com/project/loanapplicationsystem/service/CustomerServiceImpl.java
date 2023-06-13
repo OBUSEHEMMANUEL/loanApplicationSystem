@@ -9,6 +9,7 @@ import com.project.loanapplicationsystem.data.model.Customer;
 import com.project.loanapplicationsystem.data.repostory.CustomerRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,8 @@ import java.time.LocalDateTime;
 public class CustomerServiceImpl implements CustomerService{
     private final CustomerRepository customerRepository;
      private final ModelMapper modelMapper;
+
+  private final BCryptPasswordEncoder encoder;
 
     @Override
     public SucessResponse register(RegistrationRequest request) {
@@ -62,32 +65,31 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public SucessResponse login(LoginRequest request) {
-        try{
-     Customer foundUser =  customerRepository.findByEmailAddress(request.getEmailAddress()).orElseThrow(()->new RuntimeException("Invalid EmailAddress"));
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        var matches = encoder.matches(request.getPassword(), foundUser.getPassword());
+        try {
+            Customer foundUser = customerRepository.findByEmailAddress(request.getEmailAddress()).orElseThrow(() -> new RuntimeException("Invalid EmailAddress"));
+            var matches = encoder.matches(request.getPassword(), foundUser.getPassword());
 
-        if (matches) {
-         return SucessResponse.builder()
-                    .message("LOGIN SUCCESSFULLY")
-                    .StatusCode(HttpStatus.OK.value())
-                    .build();
-        } else {
-         return  SucessResponse.builder()
-                    .message("INVALID EMAIL OR PASSWORD")
-                    .StatusCode(HttpStatus.UNAUTHORIZED.value())
-                    .build();
-        }
-    }catch (RuntimeException e){
-            return  SucessResponse.builder()
-                    .message("ERROR"+ e.getMessage())
+            if (matches) {
+                return SucessResponse.builder()
+                        .message("LOGIN SUCCESSFUL")
+                        .StatusCode(HttpStatus.ACCEPTED.value())
+                        .build();
+            } else {
+                return SucessResponse.builder()
+                        .message("INVALID PASSWORD")
+                        .StatusCode(HttpStatus.UNAUTHORIZED.value())
+                        .build();
+            }
+        } catch (RuntimeException e) {
+            return SucessResponse.builder()
+                    .message("ERROR: " + e.getMessage())
                     .StatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .build();
-    }
+        }
     }
 
     private String bcrypt(String password){
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
         return encoder.encode(password);
 
     }

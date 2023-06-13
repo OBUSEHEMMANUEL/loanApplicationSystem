@@ -1,5 +1,6 @@
 package com.project.loanapplicationsystem.service;
 
+import com.project.loanapplicationsystem.data.dto.register.LoginRequest;
 import com.project.loanapplicationsystem.data.dto.register.RegistrationRequest;
 import com.project.loanapplicationsystem.data.dto.register.UpdateRegistrationRequest;
 import com.project.loanapplicationsystem.data.dto.response.SucessResponse;
@@ -14,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -34,8 +36,12 @@ class CustomerServiceImplTest {
     private CustomerRepository customerRepository;
     @MockBean
     private ModelMapper modelMapper;
+@MockBean
+    private BCryptPasswordEncoder encoder;
     @Autowired
     private CustomerService customerService;
+
+
     private RegistrationRequest registrationRequest;
     private UpdateRegistrationRequest updateRegistrationRequest;
 
@@ -68,6 +74,7 @@ class CustomerServiceImplTest {
         Customer mappedCustomer = new ModelMapper().map(registrationRequest, Customer.class);
         when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.empty());
         when(modelMapper.map(registrationRequest, Customer.class)).thenReturn(mappedCustomer);
+        when(encoder.encode(registrationRequest.getPassword())).thenReturn("EncodedPassword");
         when(customerRepository.save(any())).thenReturn(any());
          SucessResponse customerResponse = customerService.register(registrationRequest);
         verify(customerRepository).save(any());
@@ -82,6 +89,7 @@ class CustomerServiceImplTest {
         when(customerRepository.findByEmailAddress(existingEmailAddress)).thenReturn(Optional.of(new Customer()));
         assertThrows(RuntimeException.class,()->customerService.register(registrationRequest));
     }
+
     @Test
     void testThatUpdateRegisterDateRegisteredIsSetToCurrentDateTime(){
         when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.empty());
@@ -154,10 +162,80 @@ class CustomerServiceImplTest {
     }
 
 @Test
-    void testThatCustomerCanLogin(){
+    void testThatCustomerCanLoginAndSuccessResponseLoginSuccessfulIsReturned(){
+    String emailAddress = "Emmanuel@gmail.com";
+    String password ="password";
+    String encodedPassword = "encodedPassword";
 
-    when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.of(new Customer()));
+    Customer customer = new Customer();
+    customer.setPassword(encodedPassword);
+    customer.setEmailAddress("Emmanuel@gmail.com");
+
+
+    LoginRequest loginRequest =  new LoginRequest();
+    loginRequest.setPassword(emailAddress);
+    loginRequest.setPassword(password);
+
+    when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.of(customer));
+    when(encoder.matches(password,encodedPassword)).thenReturn(true);
+
+  SucessResponse customerLogin = customerService.login(loginRequest);
+
+  assertEquals(HttpStatus.ACCEPTED.value(),customerLogin.getStatusCode());
+  assertEquals("LOGIN SUCCESSFUL",customerLogin.getMessage());
 
 }
+
+    @Test
+    void testThatCustomerUsesInvalidPasswordLoginAndShouldReturnInvalidPassword(){
+        String emailAddress = "Emmanuel@gmail.com";
+        String password ="password";
+        String encodedPassword = "encodedPassword";
+
+        Customer customer = new Customer();
+        customer.setPassword(encodedPassword);
+        customer.setEmailAddress("Emmanuel@gmail.com");
+
+
+        LoginRequest loginRequest =  new LoginRequest();
+        loginRequest.setPassword(emailAddress);
+        loginRequest.setPassword(password);
+
+        when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.of(customer));
+        when(encoder.matches(password,encodedPassword)).thenReturn(false);
+
+        SucessResponse customerLogin = customerService.login(loginRequest);
+
+        assertEquals(HttpStatus.UNAUTHORIZED.value(),customerLogin.getStatusCode());
+        assertEquals("INVALID PASSWORD",customerLogin.getMessage());
+
+    }
+
+    @Test
+    void testThatCustomerLoginWithInvalidEmailAddressAndShouldReturnInternalServerErrorResponse(){
+        String emailAddress = "Emmanuel@gmail.com";
+        String password ="password";
+        String encodedPassword = "encodedPassword";
+
+        Customer customer = new Customer();
+        customer.setPassword(encodedPassword);
+        customer.setEmailAddress("wrong@gmail.com");
+
+
+        LoginRequest loginRequest =  new LoginRequest();
+        loginRequest.setPassword(emailAddress);
+        loginRequest.setPassword(password);
+
+        when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.empty());
+        when(encoder.matches(password,encodedPassword)).thenReturn(true);
+
+        SucessResponse customerLogin = customerService.login(loginRequest);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(),customerLogin.getStatusCode());
+        assertEquals("ERROR: Invalid EmailAddress",customerLogin.getMessage());
+
+    }
+
+
 
 }
