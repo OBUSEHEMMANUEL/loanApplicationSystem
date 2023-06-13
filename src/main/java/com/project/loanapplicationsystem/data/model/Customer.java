@@ -37,5 +37,5 @@ public class Customer {
     private LocalDateTime dateUpdated;
     private LocalDateTime dateCollected;
     @OneToMany(mappedBy="customer" )
-    private Set<LoanStatement> loanStatement;
+    private Set<LoanApplication> loanApplication;
    }

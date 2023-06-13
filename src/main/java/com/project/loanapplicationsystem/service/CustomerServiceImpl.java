@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -58,10 +59,7 @@ public class CustomerServiceImpl implements CustomerService{
                 .build();
     }
 
-    @Override
-    public SucessResponse loanApplication(LoanRequest request) {
-        return null;
-    }
+
 
     @Override
     public SucessResponse login(LoginRequest request) {
@@ -87,7 +85,10 @@ public class CustomerServiceImpl implements CustomerService{
                     .build();
         }
     }
-
+    @Override
+    public Optional<Customer> findById(String id){
+        return customerRepository.findById(id);
+}
     private String bcrypt(String password){
 
         return encoder.encode(password);
