@@ -1,6 +1,6 @@
 package com.project.loanapplicationsystem.service;
 
-import com.project.loanapplicationsystem.data.dto.register.LoginRequest;
+import com.project.loanapplicationsystem.data.dto.register.CustomerLoginRequest;
 import com.project.loanapplicationsystem.data.dto.register.RegistrationRequest;
 import com.project.loanapplicationsystem.data.dto.register.UpdateRegistrationRequest;
 import com.project.loanapplicationsystem.data.dto.response.SucessResponse;
@@ -38,6 +38,8 @@ class CustomerServiceImplTest {
     private ModelMapper modelMapper;
 @MockBean
     private BCryptPasswordEncoder encoder;
+
+
     @Autowired
     private CustomerService customerService;
 
@@ -172,14 +174,14 @@ class CustomerServiceImplTest {
     customer.setEmailAddress("Emmanuel@gmail.com");
 
 
-    LoginRequest loginRequest =  new LoginRequest();
-    loginRequest.setPassword(emailAddress);
-    loginRequest.setPassword(password);
+    CustomerLoginRequest customerLoginRequest =  new CustomerLoginRequest();
+    customerLoginRequest.setPassword(emailAddress);
+    customerLoginRequest.setPassword(password);
 
     when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.of(customer));
     when(encoder.matches(password,encodedPassword)).thenReturn(true);
 
-  SucessResponse customerLogin = customerService.login(loginRequest);
+  SucessResponse customerLogin = customerService.login(customerLoginRequest);
 
   assertEquals(HttpStatus.ACCEPTED.value(),customerLogin.getStatusCode());
   assertEquals("LOGIN SUCCESSFUL",customerLogin.getMessage());
@@ -197,14 +199,14 @@ class CustomerServiceImplTest {
         customer.setEmailAddress("Emmanuel@gmail.com");
 
 
-        LoginRequest loginRequest =  new LoginRequest();
-        loginRequest.setPassword(emailAddress);
-        loginRequest.setPassword(password);
+        CustomerLoginRequest customerLoginRequest =  new CustomerLoginRequest();
+        customerLoginRequest.setPassword(emailAddress);
+        customerLoginRequest.setPassword(password);
 
         when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.of(customer));
         when(encoder.matches(password,encodedPassword)).thenReturn(false);
 
-        SucessResponse customerLogin = customerService.login(loginRequest);
+        SucessResponse customerLogin = customerService.login(customerLoginRequest);
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(),customerLogin.getStatusCode());
         assertEquals("INVALID PASSWORD",customerLogin.getMessage());
@@ -222,14 +224,14 @@ class CustomerServiceImplTest {
         customer.setEmailAddress("wrong@gmail.com");
 
 
-        LoginRequest loginRequest =  new LoginRequest();
-        loginRequest.setPassword(emailAddress);
-        loginRequest.setPassword(password);
+        CustomerLoginRequest customerLoginRequest =  new CustomerLoginRequest();
+        customerLoginRequest.setPassword(emailAddress);
+        customerLoginRequest.setPassword(password);
 
         when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.empty());
         when(encoder.matches(password,encodedPassword)).thenReturn(true);
 
-        SucessResponse customerLogin = customerService.login(loginRequest);
+        SucessResponse customerLogin = customerService.login(customerLoginRequest);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(),customerLogin.getStatusCode());
         assertEquals("ERROR: Invalid EmailAddress",customerLogin.getMessage());

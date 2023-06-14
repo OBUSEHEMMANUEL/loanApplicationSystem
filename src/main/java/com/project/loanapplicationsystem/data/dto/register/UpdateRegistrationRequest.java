@@ -8,12 +8,8 @@ import lombok.Data;
 @Data
 @Builder
 public class UpdateRegistrationRequest {
+    @NotBlank
     private String customerId;
-    private String firstName;
-    private String lastName;
-    private String password;
-    private String emailAddress;
-    private String contactNumber;
     @NotBlank
     private String homeAddress;
     @NotBlank

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -37,5 +38,5 @@ public class Customer {
     private LocalDateTime dateUpdated;
     private LocalDateTime dateCollected;
     @OneToMany(mappedBy="customer" )
-    private Set<LoanApplication> loanApplication;
+    private Set<LoanApplication> loanApplication = new HashSet<>();
    }

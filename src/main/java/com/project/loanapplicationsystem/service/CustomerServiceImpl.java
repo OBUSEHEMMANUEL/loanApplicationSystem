@@ -1,7 +1,6 @@
 package com.project.loanapplicationsystem.service;
 
-import com.project.loanapplicationsystem.data.dto.register.LoanRequest;
-import com.project.loanapplicationsystem.data.dto.register.LoginRequest;
+import com.project.loanapplicationsystem.data.dto.register.CustomerLoginRequest;
 import com.project.loanapplicationsystem.data.dto.register.RegistrationRequest;
 import com.project.loanapplicationsystem.data.dto.register.UpdateRegistrationRequest;
 import com.project.loanapplicationsystem.data.dto.response.SucessResponse;
@@ -9,10 +8,8 @@ import com.project.loanapplicationsystem.data.model.Customer;
 import com.project.loanapplicationsystem.data.repostory.CustomerRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -62,7 +59,7 @@ public class CustomerServiceImpl implements CustomerService{
 
 
     @Override
-    public SucessResponse login(LoginRequest request) {
+    public SucessResponse login(CustomerLoginRequest request) {
         try {
             Customer foundUser = customerRepository.findByEmailAddress(request.getEmailAddress()).orElseThrow(() -> new RuntimeException("Invalid EmailAddress"));
             var matches = encoder.matches(request.getPassword(), foundUser.getPassword());
