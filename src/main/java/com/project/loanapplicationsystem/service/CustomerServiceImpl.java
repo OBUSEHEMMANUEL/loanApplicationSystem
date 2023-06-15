@@ -55,9 +55,6 @@ public class CustomerServiceImpl implements CustomerService{
                 .StatusCode(HttpStatus.OK.value())
                 .build();
     }
-
-
-
     @Override
     public SucessResponse login(CustomerLoginRequest request) {
         try {

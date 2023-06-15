@@ -6,10 +6,11 @@ import com.project.loanapplicationsystem.data.model.Customer;
 import com.project.loanapplicationsystem.data.model.LoanApplication;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LoanOfficerService {
 SucessResponse loanOfficerLogin(LoanOfficerLoginRequest loginRequest);
 List<LoanApplication> viewLoanApplication();
 
-Customer customerDetails(String customerId);
+ Customer customerDetails(String customerId);
 }

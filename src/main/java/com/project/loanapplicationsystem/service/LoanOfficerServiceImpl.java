@@ -1,7 +1,6 @@
 package com.project.loanapplicationsystem.service;
 
 import com.project.loanapplicationsystem.data.dto.register.LoanOfficerLoginRequest;
-import com.project.loanapplicationsystem.data.dto.register.LoanRequest;
 import com.project.loanapplicationsystem.data.dto.response.SucessResponse;
 import com.project.loanapplicationsystem.data.model.Customer;
 import com.project.loanapplicationsystem.data.model.LoanApplication;
@@ -9,11 +8,12 @@ import com.project.loanapplicationsystem.data.model.LoanOfficer;
 import com.project.loanapplicationsystem.data.repostory.LoanOfficerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -66,10 +66,13 @@ String encodedPassword =  encoder.encode("Admin");
      return loanApplicationService.viewLoanApplication();
     }
 
+
     @Override
     public Customer customerDetails(String customerId) {
 
-        return null;
+   Customer foundCustomer =  customerService.findById(customerId)
+           .orElseThrow(()-> new ResourceAccessException("Customer Not Found"));
+     return foundCustomer;
     }
 
 
