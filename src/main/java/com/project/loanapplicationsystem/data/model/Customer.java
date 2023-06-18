@@ -21,7 +21,7 @@ import java.util.Set;
 public class Customer {
     @Id
     @UuidGenerator
-    private String id;
+    private String customerId;
     private String firstName;
     private String lastName;
     private String password;

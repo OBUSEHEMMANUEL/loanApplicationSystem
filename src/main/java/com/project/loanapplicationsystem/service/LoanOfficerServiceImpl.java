@@ -6,6 +6,7 @@ import com.project.loanapplicationsystem.data.model.Customer;
 import com.project.loanapplicationsystem.data.model.LoanApplication;
 import com.project.loanapplicationsystem.data.model.LoanOfficer;
 import com.project.loanapplicationsystem.data.repostory.LoanOfficerRepository;
+import com.project.loanapplicationsystem.exception.ResourceException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -63,16 +64,22 @@ String encodedPassword =  encoder.encode("Admin");
     }
     @Override
     public List<LoanApplication> viewLoanApplication() {
-     return loanApplicationService.viewLoanApplication();
+       return loanApplicationService.viewLoanApplication();
     }
 
-
     @Override
-    public Customer customerDetails(String customerId) {
+    public Customer reviewCustomerDetails(String customerId) {
 
    Customer foundCustomer =  customerService.findById(customerId)
            .orElseThrow(()-> new ResourceAccessException("Customer Not Found"));
      return foundCustomer;
+    }
+
+    @Override
+    public LoanApplication approveLoanApplication(UUID loanApplicationId) throws ResourceException {
+
+     return loanApplicationService.acceptLoanApplication(loanApplicationId);
+
     }
 
 

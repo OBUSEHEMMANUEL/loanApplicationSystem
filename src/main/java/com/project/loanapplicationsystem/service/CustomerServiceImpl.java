@@ -43,12 +43,12 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public SucessResponse updateRegister(UpdateRegistrationRequest request) {
-        if(customerRepository.findById(request.getCustomerId()).isEmpty()){
-           throw new RuntimeException("User Not Found");
-       }
-      Customer customer = modelMapper.map(request,Customer.class);
-        customer.setDateUpdated(LocalDateTime.now());
-        customerRepository.save(customer);
+        Customer customerToUpdate = customerRepository.findById(request.getCustomerId())
+                .orElseThrow(()-> new RuntimeException("User Not Found"));
+
+      modelMapper.map(request, customerToUpdate);
+        customerToUpdate.setDateUpdated(LocalDateTime.now());
+        customerRepository.save(customerToUpdate);
 
         return SucessResponse.builder()
                 .message("Customer Registration Updated Successfully")
