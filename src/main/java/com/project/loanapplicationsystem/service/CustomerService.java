@@ -1,18 +1,35 @@
 package com.project.loanapplicationsystem.service;
 
-import com.project.loanapplicationsystem.data.dto.register.CustomerLoginRequest;
-import com.project.loanapplicationsystem.data.dto.register.RegistrationRequest;
-import com.project.loanapplicationsystem.data.dto.register.UpdateRegistrationRequest;
-import com.project.loanapplicationsystem.data.dto.response.SucessResponse;
+import com.project.loanapplicationsystem.data.dto.register.*;
+import com.project.loanapplicationsystem.data.dto.response.SuccessResponse;
 import com.project.loanapplicationsystem.data.model.Customer;
+import com.project.loanapplicationsystem.data.model.LoanAgreement;
+import com.project.loanapplicationsystem.data.model.LoanApplication;
+import com.project.loanapplicationsystem.data.model.enums.ApplicationStatus;
+import com.project.loanapplicationsystem.exception.ResourceException;
+import jakarta.mail.MessagingException;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface CustomerService {
-    SucessResponse register(RegistrationRequest request);
-    SucessResponse updateRegister(UpdateRegistrationRequest request);
+    SuccessResponse register(RegistrationRequest request) throws ResourceException;
+    SuccessResponse updateRegister(UpdateRegistrationRequest request);
 
 
-    SucessResponse login(CustomerLoginRequest request);
+    SuccessResponse login(CustomerLoginRequest request);
  Optional<Customer> findById(String id);
+
+   LoanApplication loanApplication(LoanRequest request) throws ResourceException;
+
+    ApplicationStatus viewLoanApplicationStatus(UUID loanApplicationId, UUID customerId) throws ResourceException;
+
+    LoanAgreement getLoanAgreement(UUID loanApplicationId) throws ResourceException;
+
+    String confirmToken(ConfirmTokenRequest confirmToken) throws ResourceException;
+
+    String resetPassword(SetPasswordRequest passwordRequest) throws  ResourceException;
+
+    String forgottenPassword(ForgottenPasswordRequest request) throws ResourceException;
+    String generateToken(Customer customer);
 }

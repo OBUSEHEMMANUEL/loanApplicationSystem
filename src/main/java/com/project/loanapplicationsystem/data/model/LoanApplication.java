@@ -24,4 +24,6 @@ public class LoanApplication {
     private ApplicationStatus applicationStatus;
     @ManyToOne
     private Customer customer;
+    @OneToOne(mappedBy ="loanApplication" )
+    private LoanAgreement loanAgreement;
 }

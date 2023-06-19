@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class SucessResponse {
-    private int StatusCode;
+public class SuccessResponse {
+    private int statusCode;
     private String message;
 }

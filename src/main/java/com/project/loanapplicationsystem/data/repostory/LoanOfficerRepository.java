@@ -1,6 +1,5 @@
 package com.project.loanapplicationsystem.data.repostory;
 
-import com.project.loanapplicationsystem.data.model.Customer;
 import com.project.loanapplicationsystem.data.model.LoanOfficer;
 import org.springframework.data.jpa.repository.JpaRepository;
 

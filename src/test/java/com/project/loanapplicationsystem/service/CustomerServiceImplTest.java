@@ -1,11 +1,15 @@
 package com.project.loanapplicationsystem.service;
 
-import com.project.loanapplicationsystem.data.dto.register.CustomerLoginRequest;
-import com.project.loanapplicationsystem.data.dto.register.RegistrationRequest;
-import com.project.loanapplicationsystem.data.dto.register.UpdateRegistrationRequest;
-import com.project.loanapplicationsystem.data.dto.response.SucessResponse;
+import com.project.loanapplicationsystem.data.dto.register.*;
+import com.project.loanapplicationsystem.data.dto.response.SuccessResponse;
+import com.project.loanapplicationsystem.data.model.ConfirmToken;
 import com.project.loanapplicationsystem.data.model.Customer;
+import com.project.loanapplicationsystem.data.model.LoanAgreement;
+import com.project.loanapplicationsystem.data.model.LoanApplication;
+import com.project.loanapplicationsystem.data.model.enums.ApplicationStatus;
 import com.project.loanapplicationsystem.data.repostory.CustomerRepository;
+import com.project.loanapplicationsystem.exception.ResourceException;
+import com.project.loanapplicationsystem.service.emailService.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,10 +26,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -34,6 +38,12 @@ class CustomerServiceImplTest {
 
     @MockBean
     private CustomerRepository customerRepository;
+@MockBean
+    private LoanApplicationService loanApplicationService;
+@MockBean
+    private  ConfirmTokenService confirmTokenService;
+@MockBean
+    private EmailService emailService;
     @MockBean
     private ModelMapper modelMapper;
 @MockBean
@@ -72,13 +82,15 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void testThatCustomerCanRegister() {
+    void testThatCustomerCanRegister() throws ResourceException {
         Customer mappedCustomer = new ModelMapper().map(registrationRequest, Customer.class);
         when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.empty());
         when(modelMapper.map(registrationRequest, Customer.class)).thenReturn(mappedCustomer);
         when(encoder.encode(registrationRequest.getPassword())).thenReturn("EncodedPassword");
         when(customerRepository.save(any())).thenReturn(any());
-         SucessResponse customerResponse = customerService.register(registrationRequest);
+
+         SuccessResponse customerResponse = customerService.register(registrationRequest);
+        verify(emailService).send(any(),any());
         verify(customerRepository).save(any());
         assertNotNull(customerResponse);
        assertEquals(HttpStatus.OK.value(),customerResponse.getStatusCode());
@@ -89,11 +101,11 @@ class CustomerServiceImplTest {
     void testThatExistingCustomerCannotRegisterTwiceWithSameMail(){
         String existingEmailAddress = "Emmanuel@gmail.com";
         when(customerRepository.findByEmailAddress(existingEmailAddress)).thenReturn(Optional.of(new Customer()));
-        assertThrows(RuntimeException.class,()->customerService.register(registrationRequest));
+        assertThrows(ResourceException.class,()->customerService.register(registrationRequest));
     }
 
     @Test
-    void testThatUpdateRegisterDateRegisteredIsSetToCurrentDateTime(){
+    void testThatUpdateRegisterDateRegisteredIsSetToCurrentDateTime() throws ResourceException {
         when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.empty());
         Customer mappedCustomer = new ModelMapper().map(registrationRequest, Customer.class);
         when(modelMapper.map(registrationRequest, Customer.class)).thenReturn(mappedCustomer);
@@ -125,7 +137,7 @@ class CustomerServiceImplTest {
         Customer mappedCustomer = new ModelMapper().map(updateRegistrationRequest, Customer.class);
         when(modelMapper.map(updateRegistrationRequest, Customer.class)).thenReturn(mappedCustomer);
         when(customerRepository.save(any())).thenReturn(any());
-        SucessResponse customerResponse = customerService.updateRegister(updateRegistrationRequest);
+        SuccessResponse customerResponse = customerService.updateRegister(updateRegistrationRequest);
         verify(customerRepository).save(any());
         assertNotNull(customerResponse);
         assertEquals(HttpStatus.OK.value(),customerResponse.getStatusCode());
@@ -181,7 +193,7 @@ class CustomerServiceImplTest {
     when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.of(customer));
     when(encoder.matches(password,encodedPassword)).thenReturn(true);
 
-  SucessResponse customerLogin = customerService.login(customerLoginRequest);
+  SuccessResponse customerLogin = customerService.login(customerLoginRequest);
 
   assertEquals(HttpStatus.ACCEPTED.value(),customerLogin.getStatusCode());
   assertEquals("LOGIN SUCCESSFUL",customerLogin.getMessage());
@@ -206,7 +218,7 @@ class CustomerServiceImplTest {
         when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.of(customer));
         when(encoder.matches(password,encodedPassword)).thenReturn(false);
 
-        SucessResponse customerLogin = customerService.login(customerLoginRequest);
+        SuccessResponse customerLogin = customerService.login(customerLoginRequest);
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(),customerLogin.getStatusCode());
         assertEquals("INVALID PASSWORD",customerLogin.getMessage());
@@ -231,13 +243,141 @@ class CustomerServiceImplTest {
         when(customerRepository.findByEmailAddress(any())).thenReturn(Optional.empty());
         when(encoder.matches(password,encodedPassword)).thenReturn(true);
 
-        SucessResponse customerLogin = customerService.login(customerLoginRequest);
+        SuccessResponse customerLogin = customerService.login(customerLoginRequest);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(),customerLogin.getStatusCode());
         assertEquals("ERROR: Invalid EmailAddress",customerLogin.getMessage());
 
     }
+    @Test
+    void testToViewLoanApplicationStatus() throws ResourceException {
+
+        UUID loanApplicationId = UUID.randomUUID();
+        UUID customerId = UUID.randomUUID();
+
+        Customer customer = new Customer();
+        customer.setCustomerId(String.valueOf(customerId));
+        LoanApplication loanApplication = new LoanApplication();
+        loanApplication.setId(String.valueOf(loanApplicationId));
+        loanApplication.setApplicationStatus(ApplicationStatus.APPROVED);
+        customer.getLoanApplication().add(loanApplication);
+
+        when(customerService.findById(String.valueOf(customerId))).thenReturn(Optional.of(customer));
 
 
+        ApplicationStatus result = customerService.viewLoanApplicationStatus(loanApplicationId, customerId);
 
+
+        assertEquals(ApplicationStatus.APPROVED, result);
+        verify(customerRepository, times(1)).findById(String.valueOf(customerId));
+    }
+
+    @Test
+    void testToGetCustomerLoanAgreement() throws Exception {
+        UUID loanApplicationId = UUID.randomUUID();
+        LoanApplication loanApplication = new LoanApplication();
+        loanApplication.setApplicationStatus(ApplicationStatus.APPROVED);
+
+        LoanAgreement loanAgreement = new LoanAgreement();
+        loanApplication.setLoanAgreement(loanAgreement);
+        when(loanApplicationService.findLoanApplicationById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
+
+        LoanAgreement result = customerService.getLoanAgreement(loanApplicationId);
+        assertSame(loanAgreement, result);
+
+        verify(loanApplicationService, times(1)).findLoanApplicationById(String.valueOf(loanApplicationId));
+    }
+@Test
+    void testToGetLoanAgreementLoanApplicationNotApproved() throws Exception {
+        UUID loanApplicationId = UUID.randomUUID();
+        LoanApplication loanApplication = new LoanApplication();
+        loanApplication.setApplicationStatus(ApplicationStatus.IN_PROGRESS);
+
+        // Mock the loan application service to return the loan application
+        when(loanApplicationService.findLoanApplicationById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
+
+        // Perform the method invocation and expect a ResourceException to be thrown
+        assertThrows(ResourceException.class, () -> customerService.getLoanAgreement(loanApplicationId));
+
+        // Verify that the loan application service was called with the correct loan application ID
+        verify(loanApplicationService, times(1)).findLoanApplicationById(String.valueOf(loanApplicationId));
+    }
+
+    @Test
+    void testToGetLoanAgreementLoanAgreementNotFound() throws Exception {
+        UUID loanApplicationId = UUID.randomUUID();
+        LoanApplication loanApplication = new LoanApplication();
+        loanApplication.setApplicationStatus(ApplicationStatus.APPROVED);
+
+        // Mock the loan application service to return the loan application without a loan agreement
+        when(loanApplicationService.findLoanApplicationById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
+
+        // Perform the method invocation and expect a ResourceException to be thrown
+        assertThrows(ResourceException.class, () -> customerService.getLoanAgreement(loanApplicationId));
+
+        // Verify that the loan application service was called with the correct loan application ID
+        verify(loanApplicationService, times(1)).findLoanApplicationById(String.valueOf(loanApplicationId));
+    }
+
+
+    @Test
+    void testThatConfirmTokenValidTokenAndEmailAddressReturnConfirmed() throws ResourceException {
+
+        String validToken = "valid_token";
+        String emailAddress = "derek@gmail.com";
+        ConfirmTokenRequest confirmTokenRequest = new ConfirmTokenRequest(validToken, emailAddress);
+        ConfirmToken token = ConfirmToken.builder()
+                .token(validToken)
+                .confirmedAt(LocalDateTime.now())
+                        .build();
+
+        when(confirmTokenService.getConfirmationToken(validToken)).thenReturn(Optional.of(token));
+        doNothing().when(confirmTokenService).setConfirmed(validToken);
+
+        String result = customerService.confirmToken(confirmTokenRequest);
+
+        // Assert
+        assertEquals("confirmed", result);
+        verify(confirmTokenService, times(1)).getConfirmationToken(validToken);
+        verify(confirmTokenService, times(1)).setConfirmed(validToken);
+    }
+
+    @Test
+    void testThatConfirmTokenWhenInvalidThrowResourceException() throws ResourceException {
+
+
+        String invalidToken = "invalid_token";
+        String emailAddress = "derek@gmail.com";
+        ConfirmTokenRequest confirmTokenRequest = new ConfirmTokenRequest(invalidToken, emailAddress);
+        when(confirmTokenService.getConfirmationToken(invalidToken)).thenReturn(Optional.empty());
+
+
+        assertThrows(ResourceException.class, () -> customerService.confirmToken(confirmTokenRequest));
+        verify(confirmTokenService, times(1)).getConfirmationToken(invalidToken);
+        verify(confirmTokenService, never()).setConfirmed(any());
+
+    }
+    @Test
+    void testResetPassword() throws ResourceException {
+        // Arrange
+        String emailAddress = "derek@gmail.com";
+        String newPassword = "newpassword";
+        Customer customer = new Customer();
+        customer.setEmailAddress(emailAddress);
+        customer.setPassword("oldpassword"); // Set initial password
+        when(customerRepository.findByEmailAddress(emailAddress)).thenReturn(Optional.of(customer));
+
+        SetPasswordRequest passwordRequest = new SetPasswordRequest();
+        passwordRequest.setEmailAddress(emailAddress);
+        passwordRequest.setNewPassword(newPassword);
+
+        // Act
+        String result = customerService.resetPassword(passwordRequest);
+
+        // Assert
+        assertEquals("Password reset Successfully", result);
+        assertEquals(newPassword, customer.getPassword()); // Verify that the password is updated
+        verify(customerRepository, times(1)).findByEmailAddress(emailAddress);
+    }
 }
+

@@ -1,7 +1,9 @@
 package com.project.loanapplicationsystem.data.dto.register;
 
+import com.project.loanapplicationsystem.utils.RegexPattern;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +20,8 @@ public class RegistrationRequest {
     private String firstName;
     @NotBlank
     private String lastName;
-    @NotBlank
+    @NotNull
+    @Pattern(message = "{Pattern.signupRequest.password}", regexp = RegexPattern.PASSWORD_REGEX)
     private String password;
     @NotBlank
     private String emailAddress;

@@ -3,10 +3,8 @@ package com.project.loanapplicationsystem.data.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.OneToOne;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
@@ -14,7 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Setter
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,6 +36,9 @@ public class Customer {
     private LocalDateTime dateRegistered;
     private LocalDateTime dateUpdated;
     private LocalDateTime dateCollected;
+    private Boolean isEnabled = false;
     @OneToMany(mappedBy="customer" )
     private Set<LoanApplication> loanApplication = new HashSet<>();
+    @OneToOne(mappedBy = "customer")
+    private ConfirmToken confirmToken;
    }

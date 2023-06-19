@@ -1,10 +1,10 @@
 package com.project.loanapplicationsystem.service;
 
 import com.project.loanapplicationsystem.data.dto.register.LoanRequest;
-import com.project.loanapplicationsystem.data.dto.response.SucessResponse;
 import com.project.loanapplicationsystem.data.model.Customer;
 import com.project.loanapplicationsystem.data.model.LoanApplication;
 import com.project.loanapplicationsystem.data.model.enums.ApplicationStatus;
+import com.project.loanapplicationsystem.data.repostory.CustomerRepository;
 import com.project.loanapplicationsystem.data.repostory.LoanApplicationRepository;
 import com.project.loanapplicationsystem.exception.ResourceException;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +15,6 @@ import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -36,7 +35,7 @@ class LoanApplicationServiceImpTest {
     @MockBean
     private ModelMapper modelMapper;
     @MockBean
-    private CustomerService customerService;
+    private CustomerRepository customerRepository;
     @Autowired
     private LoanApplicationService loanApplicationService;
     private LoanRequest request;
@@ -59,13 +58,13 @@ class LoanApplicationServiceImpTest {
 
         LoanApplication mappedApplication = new ModelMapper().map(request, LoanApplication.class);
 
-        when(customerService.findById(request.getCustomerId())).thenReturn(Optional.of(new Customer()));
+        when(customerRepository.findById(request.getCustomerId())).thenReturn(Optional.of(new Customer()));
         when(modelMapper.map(request, LoanApplication.class)).thenReturn(mappedApplication);
-        when(loanRepository.save(any())).thenReturn(any());
-        SucessResponse response = loanApplicationService.loanApplication(request);
-        verify(loanRepository).save(any());
+        when(loanRepository.save(any())).thenReturn(mappedApplication);
+       LoanApplication response = loanApplicationService.loanApplication(request);
+        verify(loanRepository).save(mappedApplication);
         assertNotNull(response);
-        assertEquals(HttpStatus.ACCEPTED.value(), response.getStatusCode());
+        assertEquals(ApplicationStatus.IN_PROGRESS, response.getApplicationStatus());
         verify(loanRepository, timeout(1)).save(any(LoanApplication.class));
     }
 
@@ -77,7 +76,7 @@ class LoanApplicationServiceImpTest {
                 .purpose("School fees")
                 .repaymentPreferences("Monthly")
                 .build();
-        when(customerService.findById(request1.getCustomerId())).thenReturn(null);
+        when(customerRepository.findById(request1.getCustomerId())).thenReturn(null);
         assertThrows(RuntimeException.class, () -> loanApplicationService.loanApplication(request1));
     }
     @Test
@@ -88,7 +87,7 @@ class LoanApplicationServiceImpTest {
                 .purpose("School fees")
                 .repaymentPreferences("Monthly")
                 .build();
-        when(customerService.findById(request1.getCustomerId())).thenReturn(Optional.empty());
+        when(customerRepository.findById(request1.getCustomerId())).thenReturn(Optional.empty());
         assertThrows(ResourceException.class, () -> loanApplicationService.loanApplication(request1));
     }
 
@@ -99,7 +98,7 @@ class LoanApplicationServiceImpTest {
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
         when(loanRepository.save(any())).thenReturn(loanApplication);
         LoanApplication loanService = loanApplicationService.acceptLoanApplication(loanApplicationId);
-        assertEquals(ApplicationStatus.ACCEPTED,loanService.getApplicationStatus());
+        assertEquals(ApplicationStatus.APPROVED,loanService.getApplicationStatus());
     }
     @Test
     void testAcceptLoanApplicationNotFound(){
@@ -112,7 +111,7 @@ class LoanApplicationServiceImpTest {
     void testAcceptLoanApplicationIsAlreadyAccepted(){
         UUID loanApplicationId = UUID.randomUUID();
         LoanApplication loanApplication = new LoanApplication();
-        loanApplication.setApplicationStatus(ApplicationStatus.ACCEPTED);
+        loanApplication.setApplicationStatus(ApplicationStatus.APPROVED);
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
 
         ResourceException exception =  assertThrows(ResourceException.class, ()->loanApplicationService.acceptLoanApplication(loanApplicationId));

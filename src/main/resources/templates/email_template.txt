@@ -1,0 +1,11 @@
+Loan Application Registration Confirmation
+
+Dear {name},
+
+Here is your Confirmation Token {token}
+
+Thank you for coming on board. We hope to serve you to your maximum satisfaction.
+
+Satisfy your need with LoanFx
+
+Thank you.

@@ -1,16 +1,13 @@
 package com.project.loanapplicationsystem.service;
 
-import com.project.loanapplicationsystem.data.dto.register.CustomerLoginRequest;
 import com.project.loanapplicationsystem.data.dto.register.LoanOfficerLoginRequest;
-import com.project.loanapplicationsystem.data.dto.response.SucessResponse;
-import com.project.loanapplicationsystem.data.model.Customer;
+import com.project.loanapplicationsystem.data.dto.response.SuccessResponse;
 import com.project.loanapplicationsystem.data.model.LoanOfficer;
 import com.project.loanapplicationsystem.data.repostory.LoanOfficerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -34,6 +31,8 @@ class LoanOfficerServiceImplTest {
     private LoanApplicationService loanApplicationService;
 @MockBean
     private CustomerService customerService;
+@MockBean
+private LoanAgreementService loanAgreementService;
 @MockBean
     private  BCryptPasswordEncoder encoder;
 @Autowired
@@ -64,7 +63,7 @@ private LoanOfficerService officerService;
         when(loanOfficerRepository.findByUserName(any())).thenReturn(Optional.of(loanOfficer));
         when(encoder.matches(password,encodedPassword)).thenReturn(true);
 
-        SucessResponse officerLogin = officerService.loanOfficerLogin(loginRequest);
+        SuccessResponse officerLogin = officerService.loanOfficerLogin(loginRequest);
 
         assertEquals(HttpStatus.ACCEPTED.value(),officerLogin.getStatusCode());
         assertEquals("LOGIN SUCCESSFUL",officerLogin.getMessage());
@@ -88,7 +87,7 @@ private LoanOfficerService officerService;
         when(loanOfficerRepository.findByUserName(any())).thenReturn(Optional.of(loanOfficer));
         when(encoder.matches(password,encodedPassword)).thenReturn(false);
 
-        SucessResponse officerLogin = officerService.loanOfficerLogin(loginRequest);
+        SuccessResponse officerLogin = officerService.loanOfficerLogin(loginRequest);
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(),officerLogin.getStatusCode());
         assertEquals("INVALID PASSWORD",officerLogin.getMessage());
@@ -112,7 +111,7 @@ private LoanOfficerService officerService;
         when(loanOfficerRepository.findByUserName(any())).thenReturn(Optional.empty());
         when(encoder.matches(password,encodedPassword)).thenReturn(true);
 
-        SucessResponse officerLogin = officerService.loanOfficerLogin(loginRequest);
+        SuccessResponse officerLogin = officerService.loanOfficerLogin(loginRequest);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(),officerLogin.getStatusCode());
         assertEquals("ERROR: Officer not Registered",officerLogin.getMessage());

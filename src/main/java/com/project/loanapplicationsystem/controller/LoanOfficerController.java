@@ -1,5 +1,6 @@
 package com.project.loanapplicationsystem.controller;
 
+import com.project.loanapplicationsystem.data.dto.register.LoanAgreementRequest;
 import com.project.loanapplicationsystem.data.dto.register.LoanOfficerLoginRequest;
 import com.project.loanapplicationsystem.exception.ResourceException;
 import com.project.loanapplicationsystem.service.LoanOfficerService;
@@ -19,18 +20,17 @@ public class LoanOfficerController {
     @Autowired
     private LoanOfficerService loanOfficerService;
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> loanOfficerLogin(LoanOfficerLoginRequest loginRequest, HttpServletRequest httpServletRequest){
+    public ResponseEntity<ApiResponse> loanOfficerLogin(@RequestBody LoanOfficerLoginRequest loginRequest){
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .data(loanOfficerService.loanOfficerLogin(loginRequest))
                 .timeStamp(ZonedDateTime.now())
-                .path(httpServletRequest.getRequestURI())
                 .isSuccessful(true)
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
 
     }
-    @GetMapping("/ViewApplication")
+    @GetMapping("/ViewLoanApplication")
     public ResponseEntity<ApiResponse> viewLoanApplication(){
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -40,7 +40,7 @@ public class LoanOfficerController {
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
-    @GetMapping("/ViewCustomerDetails/{customerId}")
+    @GetMapping("/reviewCustomerDetails/{customerId}")
     public ResponseEntity<ApiResponse>  ReviewCustomerDetails(@PathVariable String customerId){
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -60,6 +60,34 @@ public class LoanOfficerController {
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
-
-
+    @PutMapping("/close/{loanApplicationId}")
+    public ResponseEntity<ApiResponse>  closeLoanApplication(@PathVariable UUID loanApplicationId) throws ResourceException {
+        ApiResponse response = ApiResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .data(loanOfficerService.closeLoanApplication(loanApplicationId))
+                .timeStamp(ZonedDateTime.now())
+                .isSuccessful(true)
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+    @PutMapping("/reject/{loanApplicationId}")
+    public ResponseEntity<ApiResponse>  rejectLoanApplication(@PathVariable UUID loanApplicationId) throws ResourceException {
+        ApiResponse response = ApiResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .data(loanOfficerService.rejectedLoanApplication(loanApplicationId))
+                .timeStamp(ZonedDateTime.now())
+                .isSuccessful(true)
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+    @PostMapping("/generateLoanAgreement/{loanApplicationId}")
+    public ResponseEntity<ApiResponse>  generateLoanAgreement(LoanAgreementRequest request)  throws ResourceException {
+        ApiResponse response = ApiResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .data(loanOfficerService.generateLoanAgreement(request))
+                .timeStamp(ZonedDateTime.now())
+                .isSuccessful(true)
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
 }
