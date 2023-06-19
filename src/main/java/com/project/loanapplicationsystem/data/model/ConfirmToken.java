@@ -17,7 +17,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ConfirmToken {
     @Id
-    private long id;
+    @UuidGenerator
+    private String id;
+
     private String token;
     @NotNull
     private LocalDateTime createdAt;

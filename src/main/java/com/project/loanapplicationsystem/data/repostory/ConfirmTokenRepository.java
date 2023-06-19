@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public interface ConfirmTokenRepository extends JpaRepository<ConfirmToken,Long> {
+public interface ConfirmTokenRepository extends JpaRepository<ConfirmToken,String> {
     Optional<ConfirmToken> findByToken(String token);
 
 

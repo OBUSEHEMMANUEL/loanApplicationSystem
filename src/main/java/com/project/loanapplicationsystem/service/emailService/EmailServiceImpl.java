@@ -31,6 +31,7 @@ public class EmailServiceImpl implements EmailService{
             mimeMessageHelper.setSubject("Confirm your Email Address");
             mimeMessageHelper.setText(text);
             javaMailSender.send(mimeMessage);
+            log.info(text);
         } catch (MessagingException | MailException e) {
             log.info("problem1 " + e.getMessage());
             throw new RuntimeException(e);

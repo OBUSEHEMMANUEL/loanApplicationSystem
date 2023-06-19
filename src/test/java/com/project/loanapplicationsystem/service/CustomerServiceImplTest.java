@@ -292,14 +292,9 @@ class CustomerServiceImplTest {
         UUID loanApplicationId = UUID.randomUUID();
         LoanApplication loanApplication = new LoanApplication();
         loanApplication.setApplicationStatus(ApplicationStatus.IN_PROGRESS);
-
-        // Mock the loan application service to return the loan application
         when(loanApplicationService.findLoanApplicationById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
 
-        // Perform the method invocation and expect a ResourceException to be thrown
         assertThrows(ResourceException.class, () -> customerService.getLoanAgreement(loanApplicationId));
-
-        // Verify that the loan application service was called with the correct loan application ID
         verify(loanApplicationService, times(1)).findLoanApplicationById(String.valueOf(loanApplicationId));
     }
 

@@ -41,7 +41,6 @@ private final ConfirmTokenService confirmTokenService;
    if(customerRepository.findByEmailAddress(request.getEmailAddress()).isPresent()){
         throw new ResourceException("Customer Already Exist");
         }
-
    Customer customer =   modelMapper.map(request, Customer.class);
    String encodePassword = bcrypt(request.getPassword());
    customer.setPassword(encodePassword);
@@ -52,7 +51,7 @@ private final ConfirmTokenService confirmTokenService;
         if (token == null) {
             throw new ResourceException("Failed to generate token");
         }
-        emailService.send(request.getEmailAddress(),buildEmail(request.getLastName(),token));
+     emailService.send(request.getEmailAddress(),buildEmail(request.getLastName(),token));
   return SuccessResponse.builder()
            .message("Customer Registered Successfully")
            .statusCode(HttpStatus.OK.value())
