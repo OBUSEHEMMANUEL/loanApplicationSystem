@@ -22,14 +22,14 @@ public interface CustomerService {
 
    LoanApplication loanApplication(LoanRequest request) throws ResourceException;
 
-    ApplicationStatus viewLoanApplicationStatus(UUID loanApplicationId, UUID customerId) throws ResourceException;
+    ApplicationStatus viewLoanApplicationStatus(String loanApplicationId, String customerId) throws ResourceException;
 
-    LoanAgreement getLoanAgreement(UUID loanApplicationId) throws ResourceException;
+    LoanAgreement getLoanAgreement(String loanApplicationId) throws ResourceException;
 
     String confirmToken(ConfirmTokenRequest confirmToken) throws ResourceException;
 
     String resetPassword(SetPasswordRequest passwordRequest) throws  ResourceException;
 
     String forgottenPassword(ForgottenPasswordRequest request) throws ResourceException;
-    String generateToken(Customer customer);
+
 }

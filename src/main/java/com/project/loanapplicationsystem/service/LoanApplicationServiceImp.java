@@ -41,8 +41,8 @@ public class LoanApplicationServiceImp implements LoanApplicationService {
     }
 
     @Override
-    public LoanApplication acceptLoanApplication(UUID loanApplicationId) throws ResourceException {
-        LoanApplication loanApplication = loanRepository.findById(String.valueOf(loanApplicationId)).orElseThrow(() -> new ResourceException("Application not found"));
+    public LoanApplication acceptLoanApplication(String loanApplicationId) throws ResourceException {
+        LoanApplication loanApplication = loanRepository.findById(loanApplicationId).orElseThrow(() -> new ResourceException("Application not found"));
         if (loanApplication.getApplicationStatus() == APPROVED) {
             throw new ResourceException("Loan has already been Accepted");
         }
@@ -52,8 +52,8 @@ public class LoanApplicationServiceImp implements LoanApplicationService {
     }
 
     @Override
-    public LoanApplication rejectedLoanApplication(UUID loanApplicationId) throws ResourceException {
-        LoanApplication loanApplication = loanRepository.findById(String.valueOf(loanApplicationId)).orElseThrow(() -> new ResourceException("Application not found"));
+    public LoanApplication rejectedLoanApplication(String loanApplicationId) throws ResourceException {
+        LoanApplication loanApplication = loanRepository.findById(loanApplicationId).orElseThrow(() -> new ResourceException("Application not found"));
         if (loanApplication.getApplicationStatus() == REJECTED) {
             throw new ResourceException("Loan has already been Rejected");
         }
@@ -63,8 +63,8 @@ public class LoanApplicationServiceImp implements LoanApplicationService {
     }
 
     @Override
-    public LoanApplication closeLoanApplication(UUID loanApplicationId) throws ResourceException {
-        LoanApplication loanApplication = loanRepository.findById(String.valueOf(loanApplicationId)).orElseThrow(() -> new ResourceException("Application not found"));
+    public LoanApplication closeLoanApplication(String loanApplicationId) throws ResourceException {
+        LoanApplication loanApplication = loanRepository.findById(loanApplicationId).orElseThrow(() -> new ResourceException("Application not found"));
         if (loanApplication.getApplicationStatus() == CLOSED) {
             throw new ResourceException("Loan has already been Closed");
         }
@@ -73,8 +73,8 @@ public class LoanApplicationServiceImp implements LoanApplicationService {
         return loanRepository.save(loanApplication);
     }
     @Override
-    public LoanApplication viewLoanApplicationStatus(UUID loanApplication) throws ResourceException {
-        return loanRepository.findById(String.valueOf(loanApplication))
+    public LoanApplication viewLoanApplicationStatus(String loanApplication) throws ResourceException {
+        return loanRepository.findById(loanApplication)
                 .orElseThrow(()->new ResourceException("id not found"));
     }
     @Override

@@ -24,7 +24,4 @@ public class ConfirmToken {
     @NotNull
     private LocalDateTime createdAt;
     private LocalDateTime confirmedAt;
-
-   @OneToOne
-    private Customer customer;
 }

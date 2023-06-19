@@ -36,9 +36,9 @@ public class Customer {
     private LocalDateTime dateRegistered;
     private LocalDateTime dateUpdated;
     private LocalDateTime dateCollected;
-    private Boolean isEnabled = false;
+    private Boolean isDisabled = true;
     @OneToMany(mappedBy="customer" )
     private Set<LoanApplication> loanApplication = new HashSet<>();
-    @OneToOne(mappedBy = "customer")
+    @OneToOne
     private ConfirmToken confirmToken;
    }

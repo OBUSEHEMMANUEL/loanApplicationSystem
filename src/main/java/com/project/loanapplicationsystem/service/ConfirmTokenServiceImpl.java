@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-@EnableScheduling
+//@EnableScheduling
 public class ConfirmTokenServiceImpl implements ConfirmTokenService {
     @Autowired
     private ConfirmTokenRepository confirmTokenRepository;
@@ -25,7 +25,6 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
     public Optional<ConfirmToken> getConfirmationToken(String token){
         return confirmTokenRepository.findByToken(token);
     }
-
     @Override
     public  void setConfirmed(String token ){
         confirmTokenRepository.confirmAt(LocalDateTime.now(),token);

@@ -13,12 +13,12 @@ public interface LoanApplicationService {
 
     LoanApplication loanApplication(LoanRequest request) throws ResourceException;
 
-    LoanApplication acceptLoanApplication(UUID loanApplicationId) throws ResourceException;
+    LoanApplication acceptLoanApplication(String loanApplicationId) throws ResourceException;
 
-    LoanApplication rejectedLoanApplication(UUID loanApplicationId) throws ResourceException;
-    LoanApplication closeLoanApplication(UUID loanApplicationId) throws ResourceException;
+    LoanApplication rejectedLoanApplication(String loanApplicationId) throws ResourceException;
+    LoanApplication closeLoanApplication(String loanApplicationId) throws ResourceException;
 
-    LoanApplication viewLoanApplicationStatus(UUID loanApplication) throws ResourceException;
+    LoanApplication viewLoanApplicationStatus(String loanApplication) throws ResourceException;
 
     List<LoanApplication> viewLoanAllApplication();
 

@@ -22,13 +22,12 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService{
     private final CustomerRepository customerRepository;
-private final ConfirmTokenService confirmTokenService;
+    private final ConfirmTokenService confirmTokenService;
     private final LoanApplicationService loanApplicationService;
      private final ModelMapper modelMapper;
      private final EmailService emailService;
@@ -45,9 +44,9 @@ private final ConfirmTokenService confirmTokenService;
    String encodePassword = bcrypt(request.getPassword());
    customer.setPassword(encodePassword);
    customer.setDateRegistered(LocalDateTime.now());
-
-   customerRepository.save(customer);
         String token = generateToken(customer);
+   customerRepository.save(customer);
+
         if (token == null) {
             throw new ResourceException("Failed to generate token");
         }
@@ -58,7 +57,7 @@ private final ConfirmTokenService confirmTokenService;
            .build();
     }
 
-    public String generateToken(Customer customer) {
+    private String generateToken(Customer customer) {
         StringBuilder tok = new StringBuilder();
         SecureRandom number = new SecureRandom();
         for (int i = 0; i < 4; i++) {
@@ -68,10 +67,10 @@ private final ConfirmTokenService confirmTokenService;
         StringBuilder token = new StringBuilder(tok.toString());
         ConfirmToken confirmToken =ConfirmToken.builder()
                 .token(String.valueOf(token))
-                .confirmedAt(LocalDateTime.now())
-                .customer(customer)
+                .createdAt(LocalDateTime.now())
                 .build();
-        confirmTokenService.saveConfirmationToken(confirmToken);
+   confirmTokenService.saveConfirmationToken(confirmToken);
+        customer.setConfirmToken(confirmToken);
 
         return token.toString();
     }
@@ -123,8 +122,8 @@ public LoanApplication loanApplication(LoanRequest request) throws ResourceExcep
      return    loanApplicationService.loanApplication(request);
 }
     @Override
-    public ApplicationStatus viewLoanApplicationStatus(UUID loanApplicationId, UUID customerId) throws ResourceException {
-        Customer customer = customerRepository.findById(String.valueOf(customerId))
+    public ApplicationStatus viewLoanApplicationStatus(String loanApplicationId, String customerId) throws ResourceException {
+        Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceException("Customer not found"));
 
         LoanApplication loanApplication = customer.getLoanApplication().stream()
@@ -136,8 +135,8 @@ public LoanApplication loanApplication(LoanRequest request) throws ResourceExcep
     }
 
     @Override
-    public LoanAgreement getLoanAgreement(UUID loanApplicationId) throws ResourceException {
-        LoanApplication loanApplication = loanApplicationService.findLoanApplicationById(String.valueOf(loanApplicationId)).orElseThrow(()->new ResourceException("Loan Application not Found"));
+    public LoanAgreement getLoanAgreement(String loanApplicationId) throws ResourceException {
+        LoanApplication loanApplication = loanApplicationService.findLoanApplicationById(loanApplicationId).orElseThrow(()->new ResourceException("Loan Application not Found"));
 
         if (loanApplication.getApplicationStatus() != ApplicationStatus.APPROVED) {
             throw new ResourceException("Loan application is not approved");
@@ -150,14 +149,15 @@ public LoanApplication loanApplication(LoanRequest request) throws ResourceExcep
     }
     @Override
     public String confirmToken(ConfirmTokenRequest confirmToken) throws ResourceException {
-        var token = confirmTokenService.getConfirmationToken(confirmToken.token())
+        var token = confirmTokenService.getConfirmationToken(confirmToken.getToken())
                 .orElseThrow(()-> new ResourceException("Token does not exist"));
 
         confirmTokenService.setConfirmed(token.getToken());
-        enableUser(confirmToken.emailAddress());
+        enableUser(confirmToken.getEmailAddress());
 
         return "confirmed";
     }
+
     @Override
     public String resetPassword(SetPasswordRequest passwordRequest) throws  ResourceException {
        Customer user = customerRepository.findByEmailAddress(passwordRequest.getEmailAddress()).orElseThrow(()->new ResourceException("Email not found"));
@@ -170,14 +170,14 @@ public LoanApplication loanApplication(LoanRequest request) throws ResourceExcep
 
         String token = generateToken(foundCustomer);
 
-        ConfirmToken confirmationToken = ConfirmToken.builder()
+        ConfirmToken confirmToken = ConfirmToken.builder()
                 .token(token)
                 .createdAt(LocalDateTime.now())
-                .customer(foundCustomer)
                 .build();
 
-        confirmTokenService.saveConfirmationToken(confirmationToken);
-
+        confirmTokenService.saveConfirmationToken(confirmToken);
+        foundCustomer.setConfirmToken(confirmToken);
+customerRepository.save(foundCustomer);
         emailService.send(request.getEmailAddress(), buildEmail(foundCustomer.getLastName(),token));
 
         return  "Token sent to your email Successfully";

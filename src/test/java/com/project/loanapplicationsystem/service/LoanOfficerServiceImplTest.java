@@ -60,7 +60,7 @@ private LoanOfficerService officerService;
         loginRequest.setPassword(password);
 
 
-        when(loanOfficerRepository.findByUserName(any())).thenReturn(Optional.of(loanOfficer));
+        when(loanOfficerRepository.findByUserNameIgnoreCase(any())).thenReturn(Optional.of(loanOfficer));
         when(encoder.matches(password,encodedPassword)).thenReturn(true);
 
         SuccessResponse officerLogin = officerService.loanOfficerLogin(loginRequest);
@@ -84,7 +84,7 @@ private LoanOfficerService officerService;
         loginRequest.setUserName(username);
         loginRequest.setPassword(password);
 
-        when(loanOfficerRepository.findByUserName(any())).thenReturn(Optional.of(loanOfficer));
+        when(loanOfficerRepository.findByUserNameIgnoreCase(any())).thenReturn(Optional.of(loanOfficer));
         when(encoder.matches(password,encodedPassword)).thenReturn(false);
 
         SuccessResponse officerLogin = officerService.loanOfficerLogin(loginRequest);
@@ -108,7 +108,7 @@ private LoanOfficerService officerService;
         loginRequest.setUserName(username);
         loginRequest.setPassword(password);
 
-        when(loanOfficerRepository.findByUserName(any())).thenReturn(Optional.empty());
+        when(loanOfficerRepository.findByUserNameIgnoreCase(any())).thenReturn(Optional.empty());
         when(encoder.matches(password,encodedPassword)).thenReturn(true);
 
         SuccessResponse officerLogin = officerService.loanOfficerLogin(loginRequest);

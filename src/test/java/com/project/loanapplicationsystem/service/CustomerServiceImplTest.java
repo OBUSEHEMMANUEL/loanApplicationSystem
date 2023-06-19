@@ -252,7 +252,7 @@ class CustomerServiceImplTest {
     @Test
     void testToViewLoanApplicationStatus() throws ResourceException {
 
-        UUID loanApplicationId = UUID.randomUUID();
+        String loanApplicationId = UUID.randomUUID().toString();
         UUID customerId = UUID.randomUUID();
 
         Customer customer = new Customer();
@@ -265,7 +265,7 @@ class CustomerServiceImplTest {
         when(customerService.findById(String.valueOf(customerId))).thenReturn(Optional.of(customer));
 
 
-        ApplicationStatus result = customerService.viewLoanApplicationStatus(loanApplicationId, customerId);
+        ApplicationStatus result = customerService.viewLoanApplicationStatus(loanApplicationId, String.valueOf(customerId));
 
 
         assertEquals(ApplicationStatus.APPROVED, result);
@@ -282,7 +282,7 @@ class CustomerServiceImplTest {
         loanApplication.setLoanAgreement(loanAgreement);
         when(loanApplicationService.findLoanApplicationById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
 
-        LoanAgreement result = customerService.getLoanAgreement(loanApplicationId);
+        LoanAgreement result = customerService.getLoanAgreement(String.valueOf(loanApplicationId));
         assertSame(loanAgreement, result);
 
         verify(loanApplicationService, times(1)).findLoanApplicationById(String.valueOf(loanApplicationId));
@@ -294,7 +294,7 @@ class CustomerServiceImplTest {
         loanApplication.setApplicationStatus(ApplicationStatus.IN_PROGRESS);
         when(loanApplicationService.findLoanApplicationById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
 
-        assertThrows(ResourceException.class, () -> customerService.getLoanAgreement(loanApplicationId));
+        assertThrows(ResourceException.class, () -> customerService.getLoanAgreement(String.valueOf(loanApplicationId)));
         verify(loanApplicationService, times(1)).findLoanApplicationById(String.valueOf(loanApplicationId));
     }
 
@@ -308,7 +308,7 @@ class CustomerServiceImplTest {
         when(loanApplicationService.findLoanApplicationById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
 
         // Perform the method invocation and expect a ResourceException to be thrown
-        assertThrows(ResourceException.class, () -> customerService.getLoanAgreement(loanApplicationId));
+        assertThrows(ResourceException.class, () -> customerService.getLoanAgreement(String.valueOf(loanApplicationId)));
 
         // Verify that the loan application service was called with the correct loan application ID
         verify(loanApplicationService, times(1)).findLoanApplicationById(String.valueOf(loanApplicationId));
@@ -320,7 +320,10 @@ class CustomerServiceImplTest {
 
         String validToken = "valid_token";
         String emailAddress = "derek@gmail.com";
-        ConfirmTokenRequest confirmTokenRequest = new ConfirmTokenRequest(validToken, emailAddress);
+        ConfirmTokenRequest confirmTokenRequest = new ConfirmTokenRequest();
+
+        confirmTokenRequest.setToken(validToken);
+        confirmTokenRequest.setEmailAddress(emailAddress);
         ConfirmToken token = ConfirmToken.builder()
                 .token(validToken)
                 .confirmedAt(LocalDateTime.now())
@@ -343,7 +346,10 @@ class CustomerServiceImplTest {
 
         String invalidToken = "invalid_token";
         String emailAddress = "derek@gmail.com";
-        ConfirmTokenRequest confirmTokenRequest = new ConfirmTokenRequest(invalidToken, emailAddress);
+        ConfirmTokenRequest confirmTokenRequest = new ConfirmTokenRequest();
+
+        confirmTokenRequest.setToken(invalidToken);
+        confirmTokenRequest.setEmailAddress(emailAddress);
         when(confirmTokenService.getConfirmationToken(invalidToken)).thenReturn(Optional.empty());
 
 

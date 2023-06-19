@@ -97,14 +97,14 @@ class LoanApplicationServiceImpTest {
         LoanApplication loanApplication = new LoanApplication();
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
         when(loanRepository.save(any())).thenReturn(loanApplication);
-        LoanApplication loanService = loanApplicationService.acceptLoanApplication(loanApplicationId);
+        LoanApplication loanService = loanApplicationService.acceptLoanApplication(String.valueOf(loanApplicationId));
         assertEquals(ApplicationStatus.APPROVED,loanService.getApplicationStatus());
     }
     @Test
     void testAcceptLoanApplicationNotFound(){
         UUID loanApplicationId = UUID.randomUUID();
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.empty());
-        ResourceException exception =  assertThrows(ResourceException.class, ()->loanApplicationService.acceptLoanApplication(loanApplicationId));
+        ResourceException exception =  assertThrows(ResourceException.class, ()->loanApplicationService.acceptLoanApplication(String.valueOf(loanApplicationId)));
    assertEquals("Application not found", exception.getMessage());
     }
     @Test
@@ -114,7 +114,7 @@ class LoanApplicationServiceImpTest {
         loanApplication.setApplicationStatus(ApplicationStatus.APPROVED);
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
 
-        ResourceException exception =  assertThrows(ResourceException.class, ()->loanApplicationService.acceptLoanApplication(loanApplicationId));
+        ResourceException exception =  assertThrows(ResourceException.class, ()->loanApplicationService.acceptLoanApplication(String.valueOf(loanApplicationId)));
 
         assertEquals("Loan has already been Accepted", exception.getMessage());
     }
@@ -124,7 +124,7 @@ class LoanApplicationServiceImpTest {
 
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(new LoanApplication()));
         when(loanRepository.save(any())).thenReturn(any());
-        loanApplicationService.acceptLoanApplication(loanApplicationId);
+        loanApplicationService.acceptLoanApplication(String.valueOf(loanApplicationId));
         ArgumentCaptor<LoanApplication> loanCaptor = ArgumentCaptor.forClass(LoanApplication.class);
             verify(loanRepository).save(loanCaptor.capture());
       LoanApplication updateLoanApplication = loanCaptor.getValue();
@@ -139,14 +139,14 @@ class LoanApplicationServiceImpTest {
         LoanApplication loanApplication = new LoanApplication();
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
         when(loanRepository.save(any())).thenReturn(loanApplication);
-        LoanApplication loanService = loanApplicationService.rejectedLoanApplication(loanApplicationId);
+        LoanApplication loanService = loanApplicationService.rejectedLoanApplication(String.valueOf(loanApplicationId));
         assertEquals(ApplicationStatus.REJECTED,loanService.getApplicationStatus());
     }
     @Test
     void testRejectedLoanApplicationNotFound(){
         UUID loanApplicationId = UUID.randomUUID();
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.empty());
-        ResourceException exception =  assertThrows(ResourceException.class, ()->loanApplicationService.rejectedLoanApplication(loanApplicationId));
+        ResourceException exception =  assertThrows(ResourceException.class, ()->loanApplicationService.rejectedLoanApplication(String.valueOf(loanApplicationId)));
         assertEquals("Application not found", exception.getMessage());
     }
     @Test
@@ -156,7 +156,7 @@ class LoanApplicationServiceImpTest {
         loanApplication.setApplicationStatus(ApplicationStatus.REJECTED);
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
 
-        ResourceException exception =  assertThrows(ResourceException.class, ()->loanApplicationService.rejectedLoanApplication(loanApplicationId));
+        ResourceException exception =  assertThrows(ResourceException.class, ()->loanApplicationService.rejectedLoanApplication(String.valueOf(loanApplicationId)));
 
         assertEquals("Loan has already been Rejected", exception.getMessage());
     }
@@ -166,7 +166,7 @@ class LoanApplicationServiceImpTest {
 
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(new LoanApplication()));
         when(loanRepository.save(any())).thenReturn(any());
-        loanApplicationService.rejectedLoanApplication(loanApplicationId);
+        loanApplicationService.rejectedLoanApplication(String.valueOf(loanApplicationId));
         ArgumentCaptor<LoanApplication> loanCaptor = ArgumentCaptor.forClass(LoanApplication.class);
         verify(loanRepository).save(loanCaptor.capture());
         LoanApplication updateLoanApplication = loanCaptor.getValue();
@@ -180,14 +180,14 @@ class LoanApplicationServiceImpTest {
         LoanApplication loanApplication = new LoanApplication();
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
         when(loanRepository.save(any())).thenReturn(loanApplication);
-        LoanApplication loanService = loanApplicationService.closeLoanApplication(loanApplicationId);
+        LoanApplication loanService = loanApplicationService.closeLoanApplication(String.valueOf(loanApplicationId));
         assertEquals(ApplicationStatus.CLOSED,loanService.getApplicationStatus());
     }
     @Test
     void testClosedLoanApplicationNotFound(){
         UUID loanApplicationId = UUID.randomUUID();
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.empty());
-        ResourceException exception =  assertThrows(ResourceException.class, ()->loanApplicationService.closeLoanApplication(loanApplicationId));
+        ResourceException exception =  assertThrows(ResourceException.class, ()->loanApplicationService.closeLoanApplication(String.valueOf(loanApplicationId)));
         assertEquals("Application not found", exception.getMessage());
     }
     @Test
@@ -197,7 +197,7 @@ class LoanApplicationServiceImpTest {
         loanApplication.setApplicationStatus(ApplicationStatus.CLOSED);
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
 
-        ResourceException exception =  assertThrows(ResourceException.class, ()->loanApplicationService.closeLoanApplication(loanApplicationId));
+        ResourceException exception =  assertThrows(ResourceException.class, ()->loanApplicationService.closeLoanApplication(String.valueOf(loanApplicationId)));
 
         assertEquals("Loan has already been Closed", exception.getMessage());
     }
@@ -207,7 +207,7 @@ class LoanApplicationServiceImpTest {
 
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(new LoanApplication()));
         when(loanRepository.save(any())).thenReturn(any());
-        loanApplicationService.closeLoanApplication(loanApplicationId);
+        loanApplicationService.closeLoanApplication(String.valueOf(loanApplicationId));
         ArgumentCaptor<LoanApplication> loanCaptor = ArgumentCaptor.forClass(LoanApplication.class);
         verify(loanRepository).save(loanCaptor.capture());
         LoanApplication updateLoanApplication = loanCaptor.getValue();
@@ -220,7 +220,7 @@ class LoanApplicationServiceImpTest {
         UUID loanApplicationId = UUID.randomUUID();
         LoanApplication loanApplication = new LoanApplication();
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
-   LoanApplication result = loanApplicationService.viewLoanApplicationStatus(loanApplicationId);
+   LoanApplication result = loanApplicationService.viewLoanApplicationStatus(String.valueOf(loanApplicationId));
    assertNotNull(result);
    assertSame(loanApplication,result);
    verify(loanRepository,times(1)).findById(String.valueOf(loanApplicationId));
@@ -229,7 +229,7 @@ class LoanApplicationServiceImpTest {
     void testViewLoanApplicationStatusInNonExistingLoanApplication(){
         UUID loanApplicationId = UUID.randomUUID();
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.empty());
-        assertThrows(ResourceException.class, ()-> loanApplicationService.viewLoanApplicationStatus(loanApplicationId));
+        assertThrows(ResourceException.class, ()-> loanApplicationService.viewLoanApplicationStatus(String.valueOf(loanApplicationId)));
         verify(loanRepository, times(1)).findById(String.valueOf(loanApplicationId));
     }
 

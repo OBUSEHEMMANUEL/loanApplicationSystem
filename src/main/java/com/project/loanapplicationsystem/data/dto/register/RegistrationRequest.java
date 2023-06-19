@@ -20,8 +20,8 @@ public class RegistrationRequest {
     private String firstName;
     @NotBlank
     private String lastName;
-    @NotNull
-    @Pattern(message = "{Pattern.signupRequest.password}", regexp = RegexPattern.PASSWORD_REGEX)
+    @NotBlank
+//    @Pattern(message = "{Pattern.signupRequest.password}", regexp = RegexPattern.PASSWORD_REGEX)
     private String password;
     @NotBlank
     private String emailAddress;

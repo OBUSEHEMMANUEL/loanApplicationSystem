@@ -17,7 +17,7 @@ Optional<Customer> findByEmailAddress(String emailAddress);
     @Transactional
     @Modifying
     @Query("UPDATE  Customer  customer " +
-            "SET customer.isEnabled = true" +
+            "SET customer.isDisabled = false" +
             " WHERE customer.emailAddress=?1")
     void enable(String emailAddress);
 

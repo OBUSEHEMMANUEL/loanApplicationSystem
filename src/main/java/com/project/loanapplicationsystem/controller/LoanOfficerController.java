@@ -51,7 +51,7 @@ public class LoanOfficerController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
     @PutMapping("/approve/{loanApplicationId}")
-    public ResponseEntity<ApiResponse>  approveLoanApplication(@PathVariable UUID loanApplicationId) throws ResourceException {
+    public ResponseEntity<ApiResponse>  approveLoanApplication(@PathVariable String loanApplicationId) throws ResourceException {
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .data(loanOfficerService.approveLoanApplication(loanApplicationId))
@@ -61,7 +61,7 @@ public class LoanOfficerController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
     @PutMapping("/close/{loanApplicationId}")
-    public ResponseEntity<ApiResponse>  closeLoanApplication(@PathVariable UUID loanApplicationId) throws ResourceException {
+    public ResponseEntity<ApiResponse>  closeLoanApplication(@PathVariable String loanApplicationId) throws ResourceException {
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .data(loanOfficerService.closeLoanApplication(loanApplicationId))
@@ -71,7 +71,7 @@ public class LoanOfficerController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
     @PutMapping("/reject/{loanApplicationId}")
-    public ResponseEntity<ApiResponse>  rejectLoanApplication(@PathVariable UUID loanApplicationId) throws ResourceException {
+    public ResponseEntity<ApiResponse>  rejectLoanApplication(@PathVariable String loanApplicationId) throws ResourceException {
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .data(loanOfficerService.rejectedLoanApplication(loanApplicationId))

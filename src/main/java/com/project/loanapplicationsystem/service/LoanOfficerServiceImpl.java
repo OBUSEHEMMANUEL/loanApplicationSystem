@@ -45,7 +45,7 @@ String encodedPassword =  encoder.encode("Admin");
     @Override
     public SuccessResponse loanOfficerLogin(LoanOfficerLoginRequest loginRequest) {
         try {
-           LoanOfficer foundUser = loanOfficerRepository.findByUserName(loginRequest.getUserName()).orElseThrow(() -> new RuntimeException("Officer not Registered"));
+           LoanOfficer foundUser = loanOfficerRepository.findByUserNameIgnoreCase(loginRequest.getUserName()).orElseThrow(() -> new RuntimeException("Officer not Registered"));
             var matches = encoder.matches(loginRequest.getPassword(), foundUser.getPassword());
 
             if (matches) {
@@ -80,18 +80,18 @@ String encodedPassword =  encoder.encode("Admin");
     }
 
     @Override
-    public LoanApplication approveLoanApplication(UUID loanApplicationId) throws ResourceException {
+    public LoanApplication approveLoanApplication(String loanApplicationId) throws ResourceException {
 
      return loanApplicationService.acceptLoanApplication(loanApplicationId);
 
     }
 
     @Override
-    public LoanApplication rejectedLoanApplication(UUID loanApplicationId) throws ResourceException {
+    public LoanApplication rejectedLoanApplication(String  loanApplicationId) throws ResourceException {
         return loanApplicationService.rejectedLoanApplication(loanApplicationId);
     }
     @Override
-    public LoanApplication  closeLoanApplication(UUID loanApplicationId) throws ResourceException {
+    public LoanApplication  closeLoanApplication(String  loanApplicationId) throws ResourceException {
        return loanApplicationService.closeLoanApplication(loanApplicationId);
     }
     @Override

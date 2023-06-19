@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/customer")
@@ -58,6 +57,7 @@ public class CustomerController {
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
     @PostMapping("/forgottenPassword")
     public ResponseEntity<ApiResponse> forgottenPassword(@RequestBody ForgottenPasswordRequest request) throws ResourceException {
         ApiResponse response = ApiResponse.builder()
@@ -67,7 +67,8 @@ public class CustomerController {
                 .isSuccessful(true)
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
-    }@PostMapping("/resetPassword")
+    }
+    @PostMapping("/resetPassword")
     public ResponseEntity<ApiResponse> resetPassword(@RequestBody SetPasswordRequest request) throws ResourceException {
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -89,7 +90,7 @@ public class CustomerController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
     @GetMapping("/viewLoanApplication/{loanApplicationId}/{customerId}")
-    public ResponseEntity<ApiResponse> viewLoanApplication(@PathVariable UUID loanApplicationId,@PathVariable UUID customerId) throws ResourceException {
+    public ResponseEntity<ApiResponse> viewLoanApplication(@PathVariable String  loanApplicationId,@PathVariable String  customerId) throws ResourceException {
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .data(customerService.viewLoanApplicationStatus( loanApplicationId, customerId))
@@ -99,7 +100,7 @@ public class CustomerController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
     @GetMapping("/viewLoanAgreement/{loanApplicationId}")
-public ResponseEntity<ApiResponse> viewLoanAgreement(@PathVariable UUID loanApplicationId) throws ResourceException {
+public ResponseEntity<ApiResponse> viewLoanAgreement(@PathVariable String  loanApplicationId) throws ResourceException {
         com.project.loanapplicationsystem.utils.ApiResponse response = com.project.loanapplicationsystem.utils.ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .data(customerService.getLoanAgreement(loanApplicationId))

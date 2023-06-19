@@ -17,11 +17,11 @@ List<LoanApplication> viewLoanApplication();
 
  Customer reviewCustomerDetails(String customerId);
 
- LoanApplication approveLoanApplication(UUID loanApplicationId) throws ResourceException;
+ LoanApplication approveLoanApplication(String loanApplicationId) throws ResourceException;
 
- LoanApplication rejectedLoanApplication(UUID loanApplicationId) throws ResourceException;
+ LoanApplication rejectedLoanApplication(String loanApplicationId) throws ResourceException;
 
-    LoanApplication  closeLoanApplication(UUID loanApplicationId) throws ResourceException;
+    LoanApplication  closeLoanApplication(String  loanApplicationId) throws ResourceException;
 
     LoanAgreement generateLoanAgreement(LoanAgreementRequest request);
 }
