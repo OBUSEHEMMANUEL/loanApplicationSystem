@@ -20,7 +20,7 @@ public interface CustomerService {
     SuccessResponse login(CustomerLoginRequest request);
  Optional<Customer> findById(String id);
 
-   LoanApplication loanApplication(LoanRequest request) throws ResourceException;
+    SuccessResponse loanApplication(LoanRequest request) throws ResourceException;
 
     ApplicationStatus viewLoanApplicationStatus(String loanApplicationId, String customerId) throws ResourceException;
 

@@ -1,6 +1,7 @@
 package com.project.loanapplicationsystem.service;
 
 import com.project.loanapplicationsystem.data.dto.register.LoanRequest;
+import com.project.loanapplicationsystem.data.dto.response.SuccessResponse;
 import com.project.loanapplicationsystem.data.model.Customer;
 import com.project.loanapplicationsystem.data.model.LoanApplication;
 import com.project.loanapplicationsystem.data.model.enums.ApplicationStatus;
@@ -61,7 +62,7 @@ class LoanApplicationServiceImpTest {
         when(customerRepository.findById(request.getCustomerId())).thenReturn(Optional.of(new Customer()));
         when(modelMapper.map(request, LoanApplication.class)).thenReturn(mappedApplication);
         when(loanRepository.save(any())).thenReturn(mappedApplication);
-       LoanApplication response = loanApplicationService.loanApplication(request);
+      SuccessResponse response = loanApplicationService.loanApplication(request);
         verify(loanRepository).save(mappedApplication);
         assertNotNull(response);
         assertEquals(ApplicationStatus.IN_PROGRESS, response.getApplicationStatus());
@@ -97,8 +98,8 @@ class LoanApplicationServiceImpTest {
         LoanApplication loanApplication = new LoanApplication();
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
         when(loanRepository.save(any())).thenReturn(loanApplication);
-        LoanApplication loanService = loanApplicationService.acceptLoanApplication(String.valueOf(loanApplicationId));
-        assertEquals(ApplicationStatus.APPROVED,loanService.getApplicationStatus());
+        SuccessResponse response = loanApplicationService.acceptLoanApplication(String.valueOf(loanApplicationId));
+        assertEquals(ApplicationStatus.APPROVED,response.getApplicationStatus());
     }
     @Test
     void testAcceptLoanApplicationNotFound(){
@@ -123,7 +124,7 @@ class LoanApplicationServiceImpTest {
         UUID loanApplicationId = UUID.randomUUID();
 
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(new LoanApplication()));
-        when(loanRepository.save(any())).thenReturn(any());
+        when(loanRepository.save(any())).thenReturn(new LoanApplication());
         loanApplicationService.acceptLoanApplication(String.valueOf(loanApplicationId));
         ArgumentCaptor<LoanApplication> loanCaptor = ArgumentCaptor.forClass(LoanApplication.class);
             verify(loanRepository).save(loanCaptor.capture());
@@ -139,8 +140,8 @@ class LoanApplicationServiceImpTest {
         LoanApplication loanApplication = new LoanApplication();
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
         when(loanRepository.save(any())).thenReturn(loanApplication);
-        LoanApplication loanService = loanApplicationService.rejectedLoanApplication(String.valueOf(loanApplicationId));
-        assertEquals(ApplicationStatus.REJECTED,loanService.getApplicationStatus());
+        SuccessResponse response = loanApplicationService.rejectedLoanApplication(String.valueOf(loanApplicationId));
+        assertEquals(ApplicationStatus.REJECTED,response.getApplicationStatus());
     }
     @Test
     void testRejectedLoanApplicationNotFound(){
@@ -165,7 +166,7 @@ class LoanApplicationServiceImpTest {
         UUID loanApplicationId = UUID.randomUUID();
 
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(new LoanApplication()));
-        when(loanRepository.save(any())).thenReturn(any());
+        when(loanRepository.save(any())).thenReturn(new LoanApplication());
         loanApplicationService.rejectedLoanApplication(String.valueOf(loanApplicationId));
         ArgumentCaptor<LoanApplication> loanCaptor = ArgumentCaptor.forClass(LoanApplication.class);
         verify(loanRepository).save(loanCaptor.capture());
@@ -180,8 +181,8 @@ class LoanApplicationServiceImpTest {
         LoanApplication loanApplication = new LoanApplication();
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(loanApplication));
         when(loanRepository.save(any())).thenReturn(loanApplication);
-        LoanApplication loanService = loanApplicationService.closeLoanApplication(String.valueOf(loanApplicationId));
-        assertEquals(ApplicationStatus.CLOSED,loanService.getApplicationStatus());
+       SuccessResponse response = loanApplicationService.closeLoanApplication(String.valueOf(loanApplicationId));
+        assertEquals(ApplicationStatus.CLOSED,response.getApplicationStatus());
     }
     @Test
     void testClosedLoanApplicationNotFound(){
@@ -206,7 +207,7 @@ class LoanApplicationServiceImpTest {
         UUID loanApplicationId = UUID.randomUUID();
 
         when(loanRepository.findById(String.valueOf(loanApplicationId))).thenReturn(Optional.of(new LoanApplication()));
-        when(loanRepository.save(any())).thenReturn(any());
+        when(loanRepository.save(any())).thenReturn(new LoanApplication());
         loanApplicationService.closeLoanApplication(String.valueOf(loanApplicationId));
         ArgumentCaptor<LoanApplication> loanCaptor = ArgumentCaptor.forClass(LoanApplication.class);
         verify(loanRepository).save(loanCaptor.capture());

@@ -30,11 +30,11 @@ public class LoanOfficerController {
         return new ResponseEntity<>(response,HttpStatus.OK);
 
     }
-    @GetMapping("/ViewLoanApplication")
-    public ResponseEntity<ApiResponse> viewLoanApplication(){
+    @GetMapping("/ViewAllLoanApplication")
+    public ResponseEntity<ApiResponse> viewAllLoanApplication(){
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
-                .data(loanOfficerService.viewLoanApplication())
+                .data(loanOfficerService.viewAllLoanApplication())
                 .timeStamp(ZonedDateTime.now())
                 .isSuccessful(true)
                 .build();
@@ -81,7 +81,7 @@ public class LoanOfficerController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
     @PostMapping("/generateLoanAgreement/{loanApplicationId}")
-    public ResponseEntity<ApiResponse>  generateLoanAgreement(LoanAgreementRequest request)  throws ResourceException {
+    public ResponseEntity<ApiResponse>  generateLoanAgreement(@PathVariable LoanAgreementRequest request)  throws ResourceException {
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .data(loanOfficerService.generateLoanAgreement(request))

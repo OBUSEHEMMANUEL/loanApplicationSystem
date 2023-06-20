@@ -17,7 +17,7 @@ public class CustomerController {
 
     @Autowired
    private CustomerService customerService;
-@PostMapping("/regiser")
+@PostMapping("/register")
     public ResponseEntity<ApiResponse> registration(@RequestBody RegistrationRequest request) throws ResourceException {
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -68,7 +68,7 @@ public class CustomerController {
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
-    @PostMapping("/resetPassword")
+    @PatchMapping("/resetPassword")
     public ResponseEntity<ApiResponse> resetPassword(@RequestBody SetPasswordRequest request) throws ResourceException {
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -80,7 +80,7 @@ public class CustomerController {
     }
 
     @PostMapping("/loanApplication")
-    public ResponseEntity<ApiResponse> loanApplication(LoanRequest request) throws ResourceException {
+    public ResponseEntity<ApiResponse> loanApplication(@RequestBody LoanRequest request) throws ResourceException {
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .data(customerService.loanApplication(request))

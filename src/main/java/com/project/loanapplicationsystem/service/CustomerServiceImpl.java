@@ -11,6 +11,7 @@ import com.project.loanapplicationsystem.data.repostory.CustomerRepository;
 import com.project.loanapplicationsystem.exception.ResourceException;
 import com.project.loanapplicationsystem.service.emailService.EmailService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,10 +22,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CustomerServiceImpl implements CustomerService{
     private final CustomerRepository customerRepository;
     private final ConfirmTokenService confirmTokenService;
@@ -50,6 +53,7 @@ public class CustomerServiceImpl implements CustomerService{
         if (token == null) {
             throw new ResourceException("Failed to generate token");
         }
+        log.info(token);
      emailService.send(request.getEmailAddress(),buildEmail(request.getLastName(),token));
   return SuccessResponse.builder()
            .message("Customer Registered Successfully")
@@ -93,7 +97,10 @@ public class CustomerServiceImpl implements CustomerService{
     public SuccessResponse login(CustomerLoginRequest request) {
         try {
             Customer foundUser = customerRepository.findByEmailAddress(request.getEmailAddress()).orElseThrow(() -> new RuntimeException("Invalid EmailAddress"));
-            var matches = encoder.matches(request.getPassword(), foundUser.getPassword());
+            if (foundUser.getIsDisabled()) {
+                throw new ResourceException("Confirm token to login");
+            }
+            boolean matches = encoder.matches(request.getPassword(), foundUser.getPassword());
 
             if (matches) {
                 return SuccessResponse.builder()
@@ -106,7 +113,7 @@ public class CustomerServiceImpl implements CustomerService{
                         .statusCode(HttpStatus.UNAUTHORIZED.value())
                         .build();
             }
-        } catch (RuntimeException e) {
+        } catch (ResourceException | RuntimeException e) {
             return SuccessResponse.builder()
                     .message("ERROR: " + e.getMessage())
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -118,7 +125,7 @@ public class CustomerServiceImpl implements CustomerService{
         return customerRepository.findById(id);
 }
 @Override
-public LoanApplication loanApplication(LoanRequest request) throws ResourceException {
+public SuccessResponse loanApplication(LoanRequest request) throws ResourceException {
      return    loanApplicationService.loanApplication(request);
 }
     @Override
@@ -157,12 +164,14 @@ public LoanApplication loanApplication(LoanRequest request) throws ResourceExcep
 
         return "confirmed";
     }
-
     @Override
     public String resetPassword(SetPasswordRequest passwordRequest) throws  ResourceException {
-       Customer user = customerRepository.findByEmailAddress(passwordRequest.getEmailAddress()).orElseThrow(()->new ResourceException("Email not found"));
-        user.setPassword(passwordRequest.getNewPassword());
+       Customer foundCustomer = customerRepository.findByEmailAddress(passwordRequest.getEmailAddress()).orElseThrow(()->new ResourceException("Email not found"));
+
+        foundCustomer.setPassword(encoder.encode(passwordRequest.getNewPassword()));
+        customerRepository.save(foundCustomer);
         return "Password reset Successfully";
+
     }
     @Override
     public String forgottenPassword(ForgottenPasswordRequest request) throws ResourceException {

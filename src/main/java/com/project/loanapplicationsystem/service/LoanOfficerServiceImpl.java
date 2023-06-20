@@ -2,6 +2,7 @@ package com.project.loanapplicationsystem.service;
 
 import com.project.loanapplicationsystem.data.dto.register.LoanAgreementRequest;
 import com.project.loanapplicationsystem.data.dto.register.LoanOfficerLoginRequest;
+import com.project.loanapplicationsystem.data.dto.response.LoanResponse;
 import com.project.loanapplicationsystem.data.dto.response.SuccessResponse;
 import com.project.loanapplicationsystem.data.model.Customer;
 import com.project.loanapplicationsystem.data.model.LoanAgreement;
@@ -67,7 +68,7 @@ String encodedPassword =  encoder.encode("Admin");
         }
     }
     @Override
-    public List<LoanApplication> viewLoanApplication() {
+    public List<LoanResponse> viewAllLoanApplication() {
        return loanApplicationService.viewLoanAllApplication();
     }
 
@@ -80,18 +81,18 @@ String encodedPassword =  encoder.encode("Admin");
     }
 
     @Override
-    public LoanApplication approveLoanApplication(String loanApplicationId) throws ResourceException {
+    public SuccessResponse approveLoanApplication(String loanApplicationId) throws ResourceException {
 
      return loanApplicationService.acceptLoanApplication(loanApplicationId);
 
     }
 
     @Override
-    public LoanApplication rejectedLoanApplication(String  loanApplicationId) throws ResourceException {
+    public SuccessResponse rejectedLoanApplication(String  loanApplicationId) throws ResourceException {
         return loanApplicationService.rejectedLoanApplication(loanApplicationId);
     }
     @Override
-    public LoanApplication  closeLoanApplication(String  loanApplicationId) throws ResourceException {
+    public SuccessResponse  closeLoanApplication(String  loanApplicationId) throws ResourceException {
        return loanApplicationService.closeLoanApplication(loanApplicationId);
     }
     @Override

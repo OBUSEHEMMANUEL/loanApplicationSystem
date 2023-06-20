@@ -183,6 +183,7 @@ class CustomerServiceImplTest {
 
     Customer customer = new Customer();
     customer.setPassword(encodedPassword);
+    customer.setIsDisabled(false);
     customer.setEmailAddress("Emmanuel@gmail.com");
 
 
@@ -208,6 +209,7 @@ class CustomerServiceImplTest {
 
         Customer customer = new Customer();
         customer.setPassword(encodedPassword);
+        customer.setIsDisabled(false);
         customer.setEmailAddress("Emmanuel@gmail.com");
 
 
@@ -363,11 +365,13 @@ class CustomerServiceImplTest {
         // Arrange
         String emailAddress = "derek@gmail.com";
         String newPassword = "newpassword";
+        String encodedPassword = "encodedPassword";
+
         Customer customer = new Customer();
         customer.setEmailAddress(emailAddress);
         customer.setPassword("oldpassword"); // Set initial password
         when(customerRepository.findByEmailAddress(emailAddress)).thenReturn(Optional.of(customer));
-
+when(encoder.encode(newPassword)).thenReturn(encodedPassword);
         SetPasswordRequest passwordRequest = new SetPasswordRequest();
         passwordRequest.setEmailAddress(emailAddress);
         passwordRequest.setNewPassword(newPassword);
@@ -377,7 +381,7 @@ class CustomerServiceImplTest {
 
         // Assert
         assertEquals("Password reset Successfully", result);
-        assertEquals(newPassword, customer.getPassword()); // Verify that the password is updated
+        assertEquals(encodedPassword, customer.getPassword()); // Verify that the password is updated
         verify(customerRepository, times(1)).findByEmailAddress(emailAddress);
     }
 }
