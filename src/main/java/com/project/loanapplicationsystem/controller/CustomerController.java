@@ -39,7 +39,7 @@ public class CustomerController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody CustomerLoginRequest request){
+    public ResponseEntity<ApiResponse> login(@RequestBody @Valid CustomerLoginRequest request){
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .data(customerService.login(request))
@@ -48,6 +48,7 @@ public class CustomerController {
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
     @PostMapping("/confirmToken")
     public ResponseEntity<ApiResponse> confirmToken(@RequestBody ConfirmTokenRequest request) throws ResourceException {
         ApiResponse response = ApiResponse.builder()
@@ -70,7 +71,7 @@ public class CustomerController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
     @PatchMapping("/resetPassword")
-    public ResponseEntity<ApiResponse> resetPassword(@RequestBody SetPasswordRequest request) throws ResourceException {
+    public ResponseEntity<ApiResponse> resetPassword(@RequestBody @Valid SetPasswordRequest request) throws ResourceException {
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .data(customerService.resetPassword(request))
