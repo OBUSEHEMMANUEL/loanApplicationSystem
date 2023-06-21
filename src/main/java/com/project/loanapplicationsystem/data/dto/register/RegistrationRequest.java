@@ -21,7 +21,7 @@ public class RegistrationRequest {
     @NotBlank
     private String lastName;
     @NotBlank
-//    @Pattern(message = "{Pattern.signupRequest.password}", regexp = RegexPattern.PASSWORD_REGEX)
+    @Pattern(message = "{Pattern.signupRequest.password}", regexp = RegexPattern.PASSWORD_REGEX)
     private String password;
     @NotBlank
     private String emailAddress;

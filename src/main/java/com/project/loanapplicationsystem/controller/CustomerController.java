@@ -4,6 +4,7 @@ import com.project.loanapplicationsystem.data.dto.register.*;
 import com.project.loanapplicationsystem.exception.ResourceException;
 import com.project.loanapplicationsystem.service.CustomerService;
 import com.project.loanapplicationsystem.utils.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class CustomerController {
     @Autowired
    private CustomerService customerService;
 @PostMapping("/register")
-    public ResponseEntity<ApiResponse> registration(@RequestBody RegistrationRequest request) throws ResourceException {
+    public ResponseEntity<ApiResponse> registration(@RequestBody @Valid RegistrationRequest request) throws ResourceException {
         ApiResponse response = ApiResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .data(customerService.register(request))
